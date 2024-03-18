@@ -94,11 +94,32 @@ def parse_ip_netmask(argv=None) -> Tuple[int, int]:
     return ip, netmask
 
 
+def wildcard(netmask: 'int') -> [int]:
+    """
+    11111111 11111111 11111111 00000000
+    xor (^)
+    11111111 11111111 11111111 11111111
+    =
+    00000000 00000000 00000000 11111111
+    """
+    return netmask ^ 0xFFFFFFFF
+
+
 def main():
     ip, netmask = parse_ip_netmask(sys.argv)
+    net_ip = ip & netmask
+    broadcast_ip = ip | wildcard(netmask)
 
-    print(f"{'ip = ':<10}{ip_int_to_str(ip)}")
-    print(f"{'netmask = ':<10}{ip_int_to_str(netmask)}")
+
+    print(f"{'ip':<9} = {ip_int_to_str(ip)}")
+    print(f"{'netmask':<9} = {ip_int_to_str(netmask)}")
+    print(f"{'net_ip':<9} = {ip_int_to_str(ip & netmask)}")
+
+    print("##################################################")
+
+    print(f"{'bcast_ip':<9} = {ip_int_to_str(broadcast_ip)}")
+    print(f"{'first_ip':<9} = {ip_int_to_str(net_ip + 1)}")
+    print(f"{'last_ip':<9} = {ip_int_to_str(broadcast_ip - 1)}")
 
 
 if __name__ == "__main__":
